@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: car-game
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: car-game
+
+  template:
+    metadata:
+      labels:
+        app: car-game
+
+    spec:
+      containers:
+        - name: car-game
+          image: 428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:latest
+
+          ports:
+            - containerPort: 5000
+

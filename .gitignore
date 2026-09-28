@@ -1,0 +1,15 @@
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment / secrets
+.env
+.env.*
+
+# Logs
+*.log

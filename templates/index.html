@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Car Dodge Game</title>
+<style>
+  body {
+    background: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    color: white;
+    margin: 0;
+    padding-top: 20px;
+  }
+  h1 { margin-bottom: 5px; }
+  #info { margin-bottom: 10px; font-size: 18px; }
+  canvas {
+    background: #2e8b2e;
+    border: 4px solid #444;
+    display: block;
+  }
+  #gameOverScreen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.85);
+    padding: 30px 50px;
+    border-radius: 10px;
+    text-align: center;
+    display: none;
+  }
+  #gameOverScreen button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<h1>Car Dodge Game</h1>
+<div id="info">Score: <span id="score">0</span> &nbsp;|&nbsp; Use LEFT / RIGHT arrow keys</div>
+
+<div style="position: relative;">
+  <canvas id="gameCanvas" width="400" height="600"></canvas>
+  <div id="gameOverScreen">
+    <h2>Game Over</h2>
+    <p>Final Score: <span id="finalScore">0</span></p>
+    <button onclick="resetGame()">Restart</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const SCREEN_WIDTH = canvas.width;
+const SCREEN_HEIGHT = canvas.height;
+
+// Road settings
+const ROAD_WIDTH = 300;
+const ROAD_LEFT = (SCREEN_WIDTH - ROAD_WIDTH) / 2;
+const ROAD_RIGHT = ROAD_LEFT + ROAD_WIDTH;
+
+// Player car
+const CAR_WIDTH = 50;
+const CAR_HEIGHT = 90;
+let playerX = SCREEN_WIDTH / 2 - CAR_WIDTH / 2;
+const playerY = SCREEN_HEIGHT - CAR_HEIGHT - 20;
+const playerSpeed = 6;
+
+// Enemy car
+const enemyWidth = 50;
+const enemyHeight = 90;
+let enemyX = randomEnemyX();
+let enemyY = -enemyHeight;
+let enemySpeed = 5;
+
+let score = 0;
+let gameActive = true;
+let dashOffset = 0;
+
+// Track which keys are currently pressed
+const keys = {};
+document.addEventListener("keydown", (e) => { keys[e.key] = true; });
+document.addEventListener("keyup", (e) => { keys[e.key] = false; });
+
+function randomEnemyX() {
+  return ROAD_LEFT + Math.random() * (ROAD_WIDTH - enemyWidth);
+}
+
+function drawRoad() {
+  ctx.fillStyle = "#2e8b2e";
+  ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+  ctx.fillStyle = "#666";
+  ctx.fillRect(ROAD_LEFT, 0, ROAD_WIDTH, SCREEN_HEIGHT);
+
+  // Dashed center line (scrolls to feel like motion)
+  ctx.fillStyle = "white";
+  const dashHeight = 30;
+  const gap = 20;
+  for (let y = -dashHeight; y < SCREEN_HEIGHT; y += dashHeight + gap) {
+    ctx.fillRect(SCREEN_WIDTH / 2 - 5, y + dashOffset, 10, dashHeight);
+  }
+}
+
+function drawCar(x, y, color) {
+  ctx.fillStyle = color;
+  roundRect(x, y, CAR_WIDTH, CAR_HEIGHT, 8);
+  ctx.fill();
+
+  ctx.fillStyle = "white";
+  ctx.fillRect(x + 8, y + 10, CAR_WIDTH - 16, 20);
+  ctx.fillRect(x + 8, y + CAR_HEIGHT - 30, CAR_WIDTH - 16, 20);
+}
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function rectsCollide(x1, y1, w1, h1, x2, y2, w2, h2) {
+  return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
+}
+
+function update() {
+  if (!gameActive) return;
+
+  // Player movement
+  if (keys["ArrowLeft"] && playerX > ROAD_LEFT) {
+    playerX -= playerSpeed;
+  }
+  if (keys["ArrowRight"] && playerX < ROAD_RIGHT - CAR_WIDTH) {
+    playerX += playerSpeed;
+  }
+
+  // Enemy movement
+  enemyY += enemySpeed;
+  dashOffset = (dashOffset + enemySpeed) % 50;
+
+  if (enemyY > SCREEN_HEIGHT) {
+    enemyY = -enemyHeight;
+    enemyX = randomEnemyX();
+    score += 1;
+    enemySpeed += 0.3;
+    document.getElementById("score").textContent = score;
+  }
+
+  // Collision check
+  if (rectsCollide(playerX, playerY, CAR_WIDTH, CAR_HEIGHT, enemyX, enemyY, enemyWidth, enemyHeight)) {
+    gameActive = false;
+    document.getElementById("finalScore").textContent = score;
+    document.getElementById("gameOverScreen").style.display = "block";
+  }
+}
+
+function draw() {
+  drawRoad();
+  drawCar(playerX, playerY, "#1e3fd6");
+  drawCar(enemyX, enemyY, "#d61e1e");
+}
+
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+function resetGame() {
+  playerX = SCREEN_WIDTH / 2 - CAR_WIDTH / 2;
+  enemyX = randomEnemyX();
+  enemyY = -enemyHeight;
+  enemySpeed = 5;
+  score = 0;
+  document.getElementById("score").textContent = score;
+  document.getElementById("gameOverScreen").style.display = "none";
+  gameActive = true;
+}
+
+gameLoop();
+</script>
+
+</body>
+</html>
+

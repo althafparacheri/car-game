@@ -13,3 +13,7 @@ __pycache__/
 
 # Logs
 *.log
+
+# Local AWS IAM policy files
+ecr-policy.json
+github-trust-policy.json

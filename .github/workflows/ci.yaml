@@ -34,7 +34,11 @@ jobs:
         run: docker build -t car-game .
 
       - name: Tag Docker image
-        run: docker tag car-game:latest 428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:latest
+        run: |
+          docker tag car-game:latest 428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:${GITHUB_SHA}
+          docker tag car-game:latest 428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:latest
 
-      - name: Push Docker image to ECR
-        run: docker push 428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:latest
+      - name: Push Docker images to ECR
+        run: |
+          docker push 428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:${GITHUB_SHA}
+          docker push 428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:latest

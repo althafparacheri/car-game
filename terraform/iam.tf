@@ -66,3 +66,31 @@ resource "aws_iam_role_policy_attachment" "eks_node_ecr_policy" {
   role       = aws_iam_role.eks_node.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
+# -------------------------
+# GitHub Actions → EKS Access
+# -------------------------
+
+data "aws_iam_role" "github_actions" {
+  name = "GitHubActions-CarGame-ECR"
+}
+
+resource "aws_iam_role_policy" "github_actions_eks_describe" {
+  name = "CarGameEKSDescribePolicy"
+  role = data.aws_iam_role.github_actions.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+      {
+        Effect = "Allow"
+
+        Action = [
+          "eks:DescribeCluster"
+        ]
+
+        Resource = aws_eks_cluster.car_game.arn
+      }
+    ]
+  })
+}

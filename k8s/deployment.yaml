@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: car-game
-          image: 428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:latest
+          image: 428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:fd3da2350f363f67f555f7121d03acb3d0ae07c0
 
           ports:
             - containerPort: 5000

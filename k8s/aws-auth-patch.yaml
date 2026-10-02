@@ -1,0 +1,12 @@
+data:
+  mapRoles: |
+    - rolearn: arn:aws:iam::428232898803:role/car-game-eks-node-role
+      groups:
+      - system:bootstrappers
+      - system:nodes
+      username: system:node:{{EC2PrivateDNSName}}
+
+    - rolearn: arn:aws:iam::428232898803:role/GitHubActions-CarGame-ECR
+      groups:
+      - car-game-deployer
+      username: github-actions

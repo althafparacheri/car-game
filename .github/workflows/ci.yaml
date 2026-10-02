@@ -1,4 +1,5 @@
-name: Car Game CI
+```yaml
+name: Car Game CI/CD
 
 on:
   push:
@@ -42,3 +43,18 @@ jobs:
         run: |
           docker push 428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:${GITHUB_SHA}
           docker push 428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:latest
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --region eu-north-1 \
+            --name car-game-cluster
+
+      - name: Deploy to EKS
+        run: |
+          kubectl set image deployment/car-game \
+            car-game=428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:${GITHUB_SHA}
+
+      - name: Verify deployment
+        run: |
+          kubectl rollout status deployment/car-game --timeout=120s

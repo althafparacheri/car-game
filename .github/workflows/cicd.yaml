@@ -4,10 +4,23 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "app.py"
+      - "Dockerfile"
+      - "requirements.txt"
+      - "templates/**"
+      - "k8s/**"
+      - ".github/workflows/cicd.yaml"
 
   pull_request:
     branches:
       - master
+    paths:
+      - "app.py"
+      - "Dockerfile"
+      - "requirements.txt"
+      - "templates/**"
+      - "k8s/**"
 
 permissions:
   id-token: write

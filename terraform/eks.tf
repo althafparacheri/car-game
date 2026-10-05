@@ -11,7 +11,8 @@ resource "aws_eks_cluster" "car_game" {
   }
 
   tags = {
-    Name = "car-game-cluster"
+    Name    = "car-game-cluster"
+    Project = "car-game"
   }
 }
 resource "aws_eks_node_group" "car_game" {
@@ -33,6 +34,7 @@ resource "aws_eks_node_group" "car_game" {
   }
 
   tags = {
-    Name = "car-game-worker"
+    Name    = "car-game-worker"
+    Project = "car-game"
   }
 }

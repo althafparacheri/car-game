@@ -18,3 +18,4 @@ __pycache__/
 # Local AWS IAM policy files
 ecr-policy.json
 github-trust-policy.json
+terraform-github-trust-policy.json

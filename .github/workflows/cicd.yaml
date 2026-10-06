@@ -21,14 +21,34 @@ on:
       - "requirements.txt"
       - "templates/**"
       - "k8s/**"
+      - ".github/workflows/cicd.yaml"
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
-  docker-build:
+
+  # CI - runs for Pull Requests and pushes to master
+  ci:
+    name: Build and Test
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t car-game .
+
+  # CD - runs only after changes reach master
+  deploy:
+    name: Deploy to EKS
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code

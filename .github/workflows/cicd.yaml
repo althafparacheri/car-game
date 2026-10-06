@@ -84,6 +84,9 @@ jobs:
 
       - name: Deploy to EKS
         run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+
           kubectl set image deployment/car-game \
             car-game=428232898803.dkr.ecr.eu-north-1.amazonaws.com/car-game:${GITHUB_SHA}
 
